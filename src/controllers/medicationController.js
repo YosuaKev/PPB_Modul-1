@@ -32,9 +32,19 @@ export const MedicationController = {
     async create(req, res) {
         try {
             const { price, quantity } = req.body;
-            if (price < 0 || quantity < 0) {
-                return res.status(400).json({ error: "Price dan Quantity tidak boleh kurang dari 0" });
+            const errors = [];
+
+            if (price < 0) {
+                errors.push("Price tidak boleh kurang dari 0");
             }
+            if (quantity < 0) {
+                errors.push("Quantity tidak boleh kurang dari 0");
+            }
+
+            if (errors.length > 0) {
+                return res.status(400).json({ errors });
+            }
+
             const med = await MedicationModel.create(req.body);
             res.status(201).json(med);
         } catch (err) {
@@ -45,9 +55,19 @@ export const MedicationController = {
     async update(req, res) {
         try {
             const { price, quantity } = req.body;
-            if (price < 0 || quantity < 0) {
-                return res.status(400).json({ error: "Price dan Quantity tidak boleh kurang dari 0" });
+            const errors = [];
+
+            if (price < 0) {
+                errors.push("Price tidak boleh kurang dari 0");
             }
+            if (quantity < 0) {
+                errors.push("Quantity tidak boleh kurang dari 0");
+            }
+
+            if (errors.length > 0) {
+                return res.status(400).json({ errors });
+            }
+
             const med = await MedicationModel.update(req.params.id, req.body);
             res.json(med);
         } catch (err) {

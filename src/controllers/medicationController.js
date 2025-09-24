@@ -1,12 +1,12 @@
 import { MedicationModel } from "../models/medicationModel.js";
 
 export const MedicationController = {
+  // GET /api/medications?name=paracetamol&page=1&limit=5
   async getAll(req, res) {
     try {
       const { name, page = 1, limit = 5 } = req.query;
       const offset = (page - 1) * limit;
 
-      // Ambil data dari model
       const { data, count } = await MedicationModel.getAll({
         name,
         limit: parseInt(limit),
@@ -24,6 +24,7 @@ export const MedicationController = {
     }
   },
 
+  // GET /api/medications/:id
   async getById(req, res) {
     try {
       const data = await MedicationModel.getById(req.params.id);
@@ -33,6 +34,7 @@ export const MedicationController = {
     }
   },
 
+  // POST /api/medications
   async create(req, res) {
     try {
       const data = await MedicationModel.create(req.body);
@@ -42,6 +44,7 @@ export const MedicationController = {
     }
   },
 
+  // PUT /api/medications/:id
   async update(req, res) {
     try {
       const data = await MedicationModel.update(req.params.id, req.body);
@@ -51,6 +54,7 @@ export const MedicationController = {
     }
   },
 
+  // DELETE /api/medications/:id
   async remove(req, res) {
     try {
       const result = await MedicationModel.remove(req.params.id);

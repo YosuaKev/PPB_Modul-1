@@ -1,8 +1,8 @@
 import { supabase } from "../config/supabaseClient.js";
 
 export const MedicationModel = {
-  // Ambil semua data + support filter & pagination
-  async getAll({ name, limit, offset }) {
+  // tambahkan default parameter supaya tidak error kalau dipanggil tanpa argumen
+  async getAll({ name = null, limit = null, offset = null } = {}) {
     let query = supabase
       .from("medications")
       .select(
@@ -10,18 +10,16 @@ export const MedicationModel = {
         id, sku, name, description, price, quantity,
         categories ( id, name ),
         suppliers ( id, name, email, phone )
-        `,
-        { count: "exact" } // supaya dapat total count
+      `,
+        { count: "exact" } // supaya count tidak null
       )
-      .order("id", { ascending: false }); // data terbaru duluan
+      .order("created_at", { ascending: false }); // data terbaru muncul di atas
 
-    // filter berdasarkan name
     if (name) {
       query = query.ilike("name", `%${name}%`);
     }
 
-    // pagination
-    if (limit && offset >= 0) {
+    if (limit !== null && offset !== null) {
       query = query.range(offset, offset + limit - 1);
     }
 
@@ -31,15 +29,16 @@ export const MedicationModel = {
     return { data, count };
   },
 
-  // Ambil data berdasarkan ID
   async getById(id) {
     const { data, error } = await supabase
       .from("medications")
-      .select(`
+      .select(
+        `
         id, sku, name, description, price, quantity,
         categories ( id, name ),
         suppliers ( id, name, email, phone )
-      `)
+      `
+      )
       .eq("id", id)
       .single();
 
@@ -47,36 +46,27 @@ export const MedicationModel = {
     return data;
   },
 
-  // Tambah data
   async create(payload) {
     const { data, error } = await supabase
       .from("medications")
       .insert([payload])
       .select();
-
     if (error) throw error;
     return data[0];
   },
 
-  // Update data
   async update(id, payload) {
     const { data, error } = await supabase
       .from("medications")
       .update(payload)
       .eq("id", id)
       .select();
-
     if (error) throw error;
     return data[0];
   },
 
-  // Hapus data
   async remove(id) {
-    const { error } = await supabase
-      .from("medications")
-      .delete()
-      .eq("id", id);
-
+    const { error } = await supabase.from("medications").delete().eq("id", id);
     if (error) throw error;
     return { success: true };
   },

@@ -10,14 +10,4 @@ router.post("/", MedicationController.create);
 router.put("/:id", MedicationController.update);
 router.delete("/:id", MedicationController.remove);
 
-// endpoint tambahan: total jumlah obat
-router.get("/reports/total", async (req, res) => {
-    try {
-        const total = await MedicationModel.getTotal();
-        res.json(total);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
 export default router;
